@@ -17,7 +17,8 @@
       script    : "app.js",
       "node_args" : "--harmony",
       env: {
-        COMMON_VARIABLE: "true"
+        COMMON_VARIABLE: "true",
+        DEBUG: "*"
       },
       env_production : {
         NODE_ENV: "production"
@@ -47,7 +48,7 @@
       repo : "https://github.com/OneEducation/academy-backend.git",
       //repo : "git@github.com:OneEducation/academy-backend.git",
       path : "/home/olpc/academy",
-      "post-deploy" : "DEBUG=* && cp ../config.js . && npm install && pm2 startOrRestart ecosystem.json5 --env dev",
+      "post-deploy" : "cp ../config.js . && npm install && pm2 startOrRestart ecosystem.json5 --env dev",
       env  : {
         NODE_ENV: "dev"
       }
