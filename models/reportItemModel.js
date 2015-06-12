@@ -32,10 +32,19 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     tableName: 'items',
     timestamps: false,
-    // indexes: [{
-    //   name: 'index_by_studentID',
-    //   method: 'BTREE',
-    //   fields: ['student_id']
-    // }]
+    hooks: {
+      beforeCreate: function(item, options, fn) {
+        item.point = item.point || 5;
+        item.count = item.count || 1;
+        item.total_point = item.point * item.count;
+
+        fn(null, item);
+      },
+      beforeUpdate: function(item, options, fn) {
+        item.total_point = item.point * item.count;
+
+        fn(null, item);
+      }
+    }
   });
 };

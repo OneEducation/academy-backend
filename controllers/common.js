@@ -30,5 +30,31 @@ module.exports = {
 		this.body = sum;
 
 		yield next;
+	},
+
+	register: function*(next) {
+		let xo_uuid = this.request.body.xo_uuid;
+		let gcm_token = this.request.body.gcm_token;
+
+		debug(xo_uuid + ' / ' + gcm_token);
+
+		let verifier = yield ReportVerifier.findOne({
+			where: {
+				xo_uuid: xo_uuid
+			}
+		});
+
+		if (!verifier) {
+			this.throw(403);
+		}
+
+		verifier = yield verifier.update({
+			gcm_token: gcm_token
+		});
+
+		debug(verifier);
+		this.body = verifier;
+
+		yield next;
 	}
 }

@@ -27,7 +27,7 @@ module.exports = {
       through: 'reports_verifiers'});
 
     this.Verifier.belongsToMany(this.Report, {
-      through: 'reports_verifiers'});  
+      through: 'reports_verifiers'});
   },
 
   init: function(callback) {

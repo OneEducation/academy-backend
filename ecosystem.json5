@@ -48,7 +48,7 @@
       repo : "https://github.com/OneEducation/academy-backend.git",
       //repo : "git@github.com:OneEducation/academy-backend.git",
       path : "/home/olpc/academy",
-      "post-deploy" : "cp ../config.js . && npm install && pm2 startOrRestart ecosystem.json5 --env dev",
+      "post-deploy" : "cp ../config.js . && npm install && node_modules/sequelize-cli/bin/sequelize db:migrate --url 'mysql://1academy:test123@localhost/one_academy' && pm2 startOrRestart ecosystem.json5 --env dev",
       env  : {
         NODE_ENV: "dev"
       }
