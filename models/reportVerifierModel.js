@@ -6,6 +6,9 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       primaryKey: true,
       allowNull: false
+    }, 
+    gcm_token: {
+      type: DataTypes.STRING
     }
   }, {
     tableName: 'verifiers',

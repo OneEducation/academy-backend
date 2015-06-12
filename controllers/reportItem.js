@@ -37,7 +37,7 @@ module.exports = {
 		yield next;
 	},
 	verify: function*(next) {
-		let params = this.params;
+		let params = this.request.body;
 		debug("item id : " + params.id);
 		debug("verifier id : " + params.verifier_id);
 
@@ -63,13 +63,15 @@ module.exports = {
 		}
 
 		yield item.update({
+			count: params.count,
 			verified: true,
 			verified_at: Date.now()
 		});
 		
-		yield item.setVerifier(item.get('Report').get('Verifiers')[0]);
+		let verifier = item.get('Report').get('Verifiers')[0];
+		yield item.setVerifier(verifier);
 		
-		debug(yield item.getVerifier());
+		//debug(yield item.getVerifier());
 
 		this.body = item;
 
@@ -95,6 +97,35 @@ module.exports = {
 		}
 		
 		this.body = items;
+
+		yield next;
+	},
+	ignore: function*(next) {
+		let params = this.params;
+		debug("item id : " + params.id);
+		debug("verifier id : " + params.verifier_id);
+
+		let report = yield Report.findOne({
+			include: [{
+				model: ReportItem,
+				where: {
+					id: params.id,
+					verified: false
+				}
+			}, {
+				model: ReportVerifier
+			}]
+		});
+
+		if (!report || report.Verifiers.length == 0) {
+			this.throw(404, "There is no matching unverified report to ignore.")
+		}
+		
+		let result = yield report.removeVerifier(report.Verifiers[0]);
+		
+		if (result[0] === 1) {
+			this.status = 200;
+		}
 
 		yield next;
 	}

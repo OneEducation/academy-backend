@@ -25,7 +25,7 @@ Models.init(function() {
 	require('./routes')(app);
 
 	// Start Server
-	app.listen(8081);
-	debug('listening on 8081');
+	app.listen(config.port);
+	debug('listening on ' + config.port);
 });
 

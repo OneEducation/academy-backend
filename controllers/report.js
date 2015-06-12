@@ -1,5 +1,6 @@
 "use strict";
 
+let request = require('co-request');
 var debug = require('debug')('report_controller');
 var Models = require('../models');
 var Report = Models.Report;
@@ -31,7 +32,6 @@ module.exports = {
     yield report.setVerifiers(verifiers);
 
     let items = yield map(data.report_items, function*(data) {
-      data.total_point = (data.point || 5) * (data.count || 1);
       return yield ReportItem.create(data);
     });
 
@@ -40,100 +40,29 @@ module.exports = {
 
     this.body = report;
 
-    yield next;
-  },
-
-  get_by_verifier: function *(next) {
-    debug("verifier id : " + this.params.id);
-
-    let verifier = yield ReportVerifier.findOne({
-      where: {
-        xo_uuid: this.params.id
+    let options = {
+      uri: 'https://gcm-http.googleapis.com/gcm/send',
+      method: 'POST',
+      json: true,
+      headers: {
+        'Authorization': 'key= AIzaSyBwfQhNExkKKIxgVhZAWLu2mJ_d1zdj1gg'
+      },
+      body: {
+        data: {
+            "title": "Verification request",
+            "text": report.name + ' requested ' + items.length + ' items.'
+        },
+        registration_ids: verifiers.map(function(verifier) {
+          return verifier.gcm_token;
+        })        
       }
-    });
+    };
 
-    if (!verifier) {
-      this.throw(404, "There is no verifier given id.");
-    }
+    console.log(options);
 
-    let reports = yield verifier.getReports({
-      where: {
-        verified: false
-      }
-    });
-    debug(reports); 
+    let result = yield request(options);
 
-    if (reports.length == 0) {
-      this.throw(404, "There is no unverified report for this verifier.");
-    }
-
-    this.body = reports;
-
-    yield next;
-  },
-
-  get_by_reporter: function *(next) {
-    debug("reporter id : " + this.params.id);
-
-    let report = yield Report.findAll({
-      include: [{ all: true}],
-      where: {
-        reporter_xo_uuid: this.params.id
-      }
-    });
-
-    if (!report) {
-      this.throw(404, "There is no record by given reporter.");
-    }
-
-    debug(report);
-
-    this.body = report;
-
-    yield next;
-  },
-
-  verify: function *(next) {
-    let params = this.params;
-    debug("report id : " + params.id);
-    debug("verifier id : " + params.verifier_id);
-
-    let report = yield Report.findOne({
-      where: {
-        id: params.id
-      }
-    });
-
-    debug(report);
-
-    if (!report) {
-      this.throw(404, "There is no report given id.");
-    }
-
-    if (report.get('verified')) {
-      this.throw(409, "Already verified by someone.");
-    }
-
-    let verifier = yield report.getVerifiers({
-      where: {
-        xo_uuid: params.verifier_id
-      }
-    });
-
-    debug(verifier);
-
-    if (!verifier || verifier.length == 0) {
-      this.throw(404, "Verifier id is not matching.");
-    }
-
-    let updatedReport = yield report.updateAttributes({
-      verified: true,
-      verified_at: Date.now(),
-      verified_by: verifier[0].get('xo_uuid')
-    });
-
-    debug(updatedReport);
-    this.body = updatedReport;
+    console.log(result);
 
     yield next;
   }
