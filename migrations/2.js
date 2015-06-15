@@ -24,7 +24,7 @@ module.exports = {
   	});
 
     queryInterface.addColumn('reports', 'ReporterXoUuid', {
-      type: Sequelize.STRING,
+      type: DataTypes.STRING,
       references: "reporters",
       referencesKey: "xo_uuid"
     });
@@ -33,7 +33,7 @@ module.exports = {
     queryInterface.removeColumn('reports', 'name');
   },
   
-  down: function (queryInterface, Sequelize) {
+  down: function (queryInterface, DataTypes) {
   	queryInterface.dropTable('reporters');
     queryInterface.removeColumn('reports', 'ReporterXoUuid');
     queryInterface.addColumn('reports', 'reporter_xo_uuid', {
