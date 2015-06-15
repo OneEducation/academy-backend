@@ -5,6 +5,7 @@ var Models = require('../models');
 var Report = Models.Report;
 var ReportItem = Models.Item;
 var ReportVerifier = Models.Verifier;
+var Reporter = Models.Reporter;
 
 module.exports = {
 	get_by_verifier: function*(next) {
@@ -16,13 +17,14 @@ module.exports = {
 			},
 			include: [{
 				model: Report,
-				attributes: ['name'],
 				include: [{
 					model: ReportVerifier,
-					//attributes: [],
 					where: {
 						xo_uuid: this.params.id
 					}
+				}, {
+					model: Reporter,
+					attributes: ['name']
 				}]
 			}]
 		});
@@ -65,7 +67,7 @@ module.exports = {
 		yield item.update({
 			count: params.count,
 			verified: true,
-			verified_at: Date.now()
+			verified_at: Models.sequelize.fn('NOW')
 		});
 		
 		let verifier = item.get('Report').get('Verifiers')[0];
@@ -82,11 +84,14 @@ module.exports = {
 
 		let items = yield ReportItem.findAll({
 		  	include: [{
-		  		attributes: [],
 		  		model: Report,
-		  		where: {
-		   	 		reporter_xo_uuid: this.params.id
-		  		}
+		  		attributes: ['ReporterXoUuid'],
+		  		include: [{
+		  			model: Reporter,
+		  			where: {
+		   	 			xo_uuid: this.params.id
+		  			}
+		  		}]
 		  	}]
 		});
 

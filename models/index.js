@@ -14,6 +14,7 @@ module.exports = {
   sequelize: sequelize,
 
   Report: load('reportModel'),
+  Reporter: load('reporterModel'),
   Item: load('reportItemModel'),
   Verifier: load('reportVerifierModel'),
 
@@ -28,6 +29,8 @@ module.exports = {
 
     this.Verifier.belongsToMany(this.Report, {
       through: 'reports_verifiers'});
+
+    this.Report.belongsTo(this.Reporter);
   },
 
   init: function(callback) {

@@ -6,6 +6,7 @@ var Models = require('../models');
 var Report = Models.Report;
 var ReportItem = Models.Item;
 var ReportVerifier = Models.Verifier;
+var Reporter = Models.Reporter;
 
 function* map(it, f) {
   let result = [];
@@ -22,6 +23,14 @@ module.exports = {
     debug(data);
 
     let report = yield Report.create(data);
+
+    let reporter = yield Reporter.findOrCreate({
+      where: {
+        xo_uuid: data.Reporter.xo_uuid
+      },
+      defaults: data.Reporter
+    });
+    yield report.setReporter(reporter[0]);
 
     let verifiers = yield map(data.verifiers, function*(verifier) {
       let res = yield ReportVerifier.findOrCreate({where: {xo_uuid: verifier.xo_uuid}});

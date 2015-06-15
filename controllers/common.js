@@ -5,6 +5,7 @@ var Models = require('../models');
 var Report = Models.Report;
 var ReportItem = Models.Item;
 var ReportVerifier = Models.Verifier;
+var Reporter = Models.Reporter;
 
 module.exports = {
 	calculatePoint: function*(next) {
@@ -19,15 +20,19 @@ module.exports = {
 			},
 			include: [{
 				model: Report,
-				where: {
-					reporter_xo_uuid: this.params.id
-				},
-				attributes: []
+				include: [{
+					model: Reporter,
+					where: {
+						xo_uuid: this.params.id
+					}
+				}]
 			}]
 		});
 
 		debug(sum);
-		this.body = sum;
+		this.body = {
+			points: sum.get('points') || 0
+		};
 
 		yield next;
 	},
