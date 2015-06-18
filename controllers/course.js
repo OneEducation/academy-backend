@@ -21,7 +21,7 @@ module.exports = {
   refresh: function*(next) {
   	
   	try {
-  		child_process.execSync('pm2 start crawler.js --no-autorestart --cron="0 0 * * 1-5" --node-args="--harmony"');
+  		child_process.execSync('pm2 start crawler.js --cron="0 0 * * 1-5" --node-args="--harmony"');
   		this.status = 200;
   	} catch(e) {
   		this.status = 500;
