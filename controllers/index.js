@@ -10,5 +10,6 @@ module.exports = {
 
   Report: load('report'),
   ReportItem: load('reportItem'),
-  Common: load('common')
+  Common: load('common'),
+  Course: load('course')
 };

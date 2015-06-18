@@ -17,4 +17,7 @@ module.exports = function routes(app) {
 
   app.get('/points/:id', Common.calculatePoint);
   app.post('/register/verifier', Common.register);
+
+  app.get('/courses', controllers.Course.get);
+  app.post('/courses/refresh', controllers.Course.refresh);
 };

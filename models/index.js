@@ -18,6 +18,8 @@ module.exports = {
   Item: load('reportItemModel'),
   Verifier: load('reportVerifierModel'),
 
+  Course: load('course'),
+
   setAssociations: function () {
     this.Report.hasMany(this.Item);
     this.Item.belongsTo(this.Report);
