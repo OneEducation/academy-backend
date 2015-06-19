@@ -75,7 +75,7 @@ module.exports = {
 		};
 
 		console.log(article.tags);
-		article.tags.forEach(function(tag) {
+		article.tags.forEach((tag) => {
 			let meta = tag.name.split(':');
 			console.log(meta);
 
@@ -96,7 +96,7 @@ module.exports = {
 		let promises = [];
 		let localCourses = yield models.Course.findAll();
 
-		localCourses.forEach(function(localCourse) {
+		localCourses.forEach((localCourse) => {
 			let remoteArticle = remoteArticles[localCourse.id];
 			if (remoteArticle) {
 				delete remoteArticles[localCourse.id];
@@ -116,7 +116,7 @@ module.exports = {
 					}
 				}));
 			}
-		}.bind(this));
+		});
 
 		for (let id in remoteArticles) {
 			promises.push(this.updateArticle(id));
