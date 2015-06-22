@@ -2,7 +2,7 @@
 
 var path = require('path');
 var Sequelize = require('sequelize');
-var sequelize = require('../common/db').academy;
+var sequelize = require('../../common/db').xo_id;
 
 function load(name) {
   console.log(path.join(__dirname, name));
@@ -13,26 +13,10 @@ module.exports = {
   Sequelize: Sequelize,
   sequelize: sequelize,
 
-  Report: load('reportModel'),
-  Reporter: load('reporterModel'),
-  Item: load('reportItemModel'),
-  Verifier: load('reportVerifierModel'),
-
-  Course: load('course'),
+  Teacher: load('teacher'),
 
   setAssociations: function () {
-    this.Report.hasMany(this.Item);
-    this.Item.belongsTo(this.Report);
 
-    this.Item.belongsTo(this.Verifier, {constraints: false});
-
-    this.Report.belongsToMany(this.Verifier, {
-      through: 'reports_verifiers'});
-
-    this.Verifier.belongsToMany(this.Report, {
-      through: 'reports_verifiers'});
-
-    this.Report.belongsTo(this.Reporter);
   },
 
   init: function(callback) {
