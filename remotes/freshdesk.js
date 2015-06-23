@@ -39,7 +39,7 @@ module.exports = {
 
   getArticle: function (id) {
     let url = id.replace('FreshDesk_', 'https://oneedu.freshdesk.com/solution/') + '.json';
-    console.log(url);
+    console.log('Downloading: ' + url);
 
     let options = {
       uri: url,
@@ -54,12 +54,8 @@ module.exports = {
   },
 
   updateArticle: function *(id) {
-    console.log('Downloading: ' + id);
     let response = yield this.getArticle(id);
     let article = response.body.article;
-
-    console.log('Updating: ' + response.request.href + ' / ' + article.title);
-
     let course = {
       id: id,
       title: article.title,
@@ -74,6 +70,7 @@ module.exports = {
       original_url: response.request.href
     };
 
+    console.log('Download done: ' + id);
     console.log(article.tags);
     article.tags.forEach((tag) => {
       let meta = tag.name.split(':');
@@ -84,9 +81,11 @@ module.exports = {
       }
     });
 
-    console.log(course.category);
-    if (course.category) {  
+    if (course.category) {
+      console.log('Category: ' + course.category);
       yield models.Course.upsert(course);
+    } else {
+      console.log('No Category, skipping it.');
     }
   },
 
@@ -100,13 +99,16 @@ module.exports = {
       if (remoteArticle) {
         delete remoteArticles[localCourse.id];
 
-        console.log('Local: ' + localCourse.get('updatedAt') + ' / remote: ' + remoteArticle.updated_at);
+        let localUpdateAt = localCourse.get('updatedAt');
+        let remoteUpdateAt = remoteArticle.updated_at;
+        console.log('Article: ' + localCourse.id);
+        console.log('Local: ' + localUpdateAt + ' / remote: ' + remoteUpdateAt);
         
-        if (Date.parse(localCourse.get('updatedAt')) === Date.parse(remoteArticle.updated_at)) {
-          console.log('Skip');
+        if (Date.parse(localUpdateAt) === Date.parse(remoteUpdateAt)) {
+          console.log('No need to update, skipping it.');
           return;
         }
-        promises.push(this.updateArticle(localCourse.id, remoteArticle));
+        promises.push(this.updateArticle(localCourse.id));
         
       } else {
         promises.push(models.Course.destroy({
@@ -115,6 +117,9 @@ module.exports = {
           }
         }));
       }
+
+      console.log('----------------------');
+
     }.bind(this));
 
     for (let id in remoteArticles) {

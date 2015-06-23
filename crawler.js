@@ -29,11 +29,9 @@ co(function *(){
 		let folder = folderResult.body.folder;
 		//console.log(folder);
 		folder.articles.forEach((article) => {
-			articles['FreshDesk_categories/' + folder.category_id + '/folders/' + folder.id + '/articles/' + article.id] = article;				
+			articles['FreshDesk_categories/' + folder.category_id + '/folders/' + folder.id + '/articles/' + article.id] = article;
 		});
 	});
-
-	console.log(articles);
 
 	yield freshdesk.updateArticles(articles);
 
