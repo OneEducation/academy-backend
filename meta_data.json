@@ -1,0 +1,14 @@
+{
+    "app_intent": {
+        "connect": "package=org.oneedu.connection;",
+        "app-universe": "package=org.oneedu.appuniverse;",
+        "chrome-browser": "package=com.android.chrome;",
+        "wps": "package=cn.wps.moffice_eng;",
+        "es-file-exp": "package=com.estrongs.android.pop;",
+        "camera": "action=android.media.action.IMAGE_CAPTURE;",
+        "gallery": "package=com.android.gallery3d;action=android.intent.action.VIEW;type=image/*;",
+        "xoid": "package=org.oneedu.xoid;",
+        "avatar": "package=org.oneedu.avatargen;",
+        "settings": "package=com.android.settings;"
+    }
+}

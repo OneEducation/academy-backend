@@ -1,11 +1,17 @@
 "use strict";
 
+let JsonDB = require('node-json-db');
 var debug = require('debug')('common_controller');
 var Models = require('../models');
 var Report = Models.Report;
 var ReportItem = Models.Item;
 var ReportVerifier = Models.Verifier;
 var Reporter = Models.Reporter;
+  
+//The second argument is used to tell the DB to save after each push
+//If you put false, you'll have to call the save() method.
+//The third argument is to ask JsonDB to save the database in an human readable format. (default false)
+let metadataDB = new JsonDB("meta_data", true, true);
 
 module.exports = {
   calculatePoint: function*(next) {
@@ -60,6 +66,23 @@ module.exports = {
     debug(verifier);
     this.body = verifier;
 
+    yield next;
+  },
+
+  getAppIntent: function*(next) {
+    let data = metadataDB.getData("/app_intent");
+    debug(data);
+
+    this.body = data;
+    yield next;
+  },
+
+  setAppIntent: function*(next) {
+    let data = this.request.body;
+    debug(data);
+    metadataDB.push("/app_intent", data);
+
+    this.status = 200;
     yield next;
   }
 }
