@@ -13,15 +13,6 @@ var Reporter = Models.Reporter;
 
 let Teacher = require('../models/xo_id').Teacher;
 
-function* map(it, f) {
-  let result = [];
-  for (let x of it) {
-    let res = yield f(x);
-    result.push(res);
-  }
-  return result;
-}
-
 function sendMail(recipients, subject, body) {
 
   let data = {
@@ -57,9 +48,11 @@ function *sendMailToVerifiers(verifiers) {
   let teachers = yield verifiers.map((verifier) => {
     return Teacher.findById(verifier.get('xo_uuid').split('_')[1]);
   });
+
+  console.log(teachers);
   
   teachers.forEach((teacher) => {
-    sendMail(teacher.get('email'), 'Academy task verification requested.', '<strong> \
+    teacher && sendMail(teacher.get('email'), 'Academy task verification requested.', '<strong> \
       <span style="font-size: 14px;">Hi, ' + teacher.get('first_name') + ' ' + teacher.get('last_name') + '</span>\
       </strong>\
       <br/>\
@@ -88,17 +81,16 @@ module.exports = {
     });
     yield report.setReporter(reporter[0]);
 
-    let verifiers = yield map(data.verifiers, function*(verifier) {
-      let res = yield ReportVerifier.findOrCreate({where: {xo_uuid: verifier.xo_uuid}});
-      return res[0];
-    });
+    let verifiers = (yield data.verifiers.map(verifier => 
+      ReportVerifier.findOrCreate({where: {xo_uuid: verifier.xo_uuid}})
+    )).map(result => result[0]);
 
     debug(verifiers);
-    yield report.setVerifiers(verifiers);
 
-    let items = yield map(data.report_items, function*(data) {
-      return yield ReportItem.create(data);
-    });
+    let items = yield data.report_items.map(item => ReportItem.create(item));
+
+    // set verifiers for each items
+    yield items.map(item => item.setVerifiers(verifiers));
 
     debug(items);
     yield report.setItems(items);
@@ -117,15 +109,13 @@ module.exports = {
             "title": "Verification request",
             "text": reporter[0].name + ' requested ' + items.length + ' items.'
         },
-        registration_ids: verifiers.map(function(verifier) {
-          return verifier.gcm_token;
-        })
+        registration_ids: verifiers.map(verifier => verifier.gcm_token)
       }
     };
     console.log(options);
 
     let result = yield request(options);
-    console.log('GCM result: ', result);
+    //console.log('GCM result: ', result);
     console.log('Body: ', result.body);
 
     yield sendMailToVerifiers(verifiers);

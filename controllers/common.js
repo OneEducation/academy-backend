@@ -14,7 +14,26 @@ var Reporter = Models.Reporter;
 let metadataDB = new JsonDB("meta_data", true, true);
 
 module.exports = {
-  calculatePoint: function*(next) {
+  verifierPoint: function*(next) {
+    debug('xo_uuid: ' + this.params.id);
+    let verifier = yield ReportVerifier.findOne({
+      where: {
+        xo_uuid: this.params.id
+      }
+    });
+
+    if (!verifier) {
+      this.throw(404, "There is no verifier with that id.");
+    }
+
+    this.body = {
+      points: verifier.get('activity_count')
+    };
+
+    yield next;
+  },
+  
+  reporterPoint: function*(next) {
     debug('xo_uuid: ' + this.params.id);
 
     let sum = yield ReportItem.findOne({

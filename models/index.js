@@ -24,13 +24,16 @@ module.exports = {
     this.Report.hasMany(this.Item);
     this.Item.belongsTo(this.Report);
 
-    this.Item.belongsTo(this.Verifier, {constraints: false});
+    this.Item.belongsTo(this.Verifier, {
+      constraints: false,
+      as: 'VerifiedBy'
+    });
 
-    this.Report.belongsToMany(this.Verifier, {
-      through: 'reports_verifiers'});
+    this.Item.belongsToMany(this.Verifier, {
+      through: 'items_verifiers'});
 
-    this.Verifier.belongsToMany(this.Report, {
-      through: 'reports_verifiers'});
+    this.Verifier.belongsToMany(this.Item, {
+      through: 'items_verifiers'});
 
     this.Report.belongsTo(this.Reporter);
   },

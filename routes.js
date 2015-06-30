@@ -12,10 +12,12 @@ module.exports = function routes(app) {
 
   app.get('/item/verifier/:id', ReportItem.get_by_verifier);
   app.get('/item/reporter/:id', ReportItem.get_by_reporter);
+  app.get('/item/verified_by/:id', ReportItem.get_by_verifiedBy);
   app.post('/verify', ReportItem.verify);
   app.post('/ignore/item/:id/by/:verifier_id', ReportItem.ignore);
 
-  app.get('/points/:id', Common.calculatePoint);
+  app.get('/points/:id', Common.reporterPoint);
+  app.get('/points/verifier/:id', Common.verifierPoint);
   app.post('/register/verifier', Common.register);
   
   app.get('/app_intent', Common.getAppIntent);

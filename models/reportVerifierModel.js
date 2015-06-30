@@ -9,6 +9,10 @@ module.exports = function(sequelize, DataTypes) {
     }, 
     gcm_token: {
       type: DataTypes.STRING
+    },
+    activity_count: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
     }
   }, {
     tableName: 'verifiers',

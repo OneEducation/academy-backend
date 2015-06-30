@@ -8,24 +8,55 @@ var ReportVerifier = Models.Verifier;
 var Reporter = Models.Reporter;
 
 module.exports = {
+	get_by_verifiedBy: function *(next) {
+		debug("verifier id : " + this.params.id);
+
+		let items = yield ReportItem.findAll({
+			// where: {
+			// 	verified: false
+			// },
+			include: [{
+				model: Report,
+				include: [{
+					model: Reporter,
+					attributes: ['name']
+				}]
+			}, {
+				model: ReportVerifier,
+				as: 'VerifiedBy',
+				where: {
+					xo_uuid: this.params.id
+				}
+			}]
+		});
+		debug(items);
+
+		if (items.length == 0) {
+		  this.throw(404, "There is no unverified report items for this verifier.");
+		}
+
+		this.body = items;
+
+		yield next;
+	},
 	get_by_verifier: function*(next) {
 		debug("verifier id : " + this.params.id);
 
 		let items = yield ReportItem.findAll({
-			where: {
-				verified: false
-			},
+			// where: {
+			// 	verified: false
+			// },
 			include: [{
 				model: Report,
 				include: [{
-					model: ReportVerifier,
-					where: {
-						xo_uuid: this.params.id
-					}
-				}, {
 					model: Reporter,
 					attributes: ['name']
 				}]
+			}, {
+				model: ReportVerifier,
+				where: {
+					xo_uuid: this.params.id
+				}
 			}]
 		});
 		debug(items);
@@ -46,35 +77,40 @@ module.exports = {
 		let item = yield ReportItem.findOne({
 			where: {
 				id: params.id,
-				verified: false
+				//verified: false
 			},
 			include: [{
-				model: Report,
-				include: [{
-					model: ReportVerifier,
-					where: {
-						xo_uuid: params.verifier_id
-					}
-				}]
+				model: ReportVerifier,
+				where: {
+					xo_uuid: params.verifier_id
+				}
 			}]
 		});
 
 		debug(item);
+
 		if (!item) {
-			this.throw(404, "There is no matching unverified report item.")
+			this.throw(404, "There is no report to you.");
 		}
 
-		yield item.update({
-			count: params.count,
-			verified: true,
-			verified_at: Models.sequelize.fn('NOW')
-		});
-		
-		let verifier = item.get('Report').get('Verifiers')[0];
-		yield item.setVerifier(verifier);
-		
-		//debug(yield item.getVerifier());
+		let verifier = item.get('Verifiers')[0];
 
+		// Give point to verifier
+		yield verifier.increment('activity_count');
+
+		// Update only unverified one
+		if (item.get('verified') === false) {	
+			yield item.update({
+				count: params.count,
+				verified: true,
+				verified_at: Models.sequelize.fn('NOW'),
+				VerifiedByXoUuid: verifier.get('xo_uuid')
+			});
+		}
+		
+		// Remove verifier from item
+		yield item.removeVerifier(verifier);
+		
 		this.body = item;
 
 		yield next;
@@ -110,28 +146,29 @@ module.exports = {
 		debug("item id : " + params.id);
 		debug("verifier id : " + params.verifier_id);
 
-		let report = yield Report.findOne({
+		let item = yield ReportItem.findOne({
+			where: {
+				id: params.id,
+				//verified: false
+			},
 			include: [{
-				model: ReportItem,
+				model: ReportVerifier,
 				where: {
-					id: params.id,
-					verified: false
+					xo_uuid: params.verifier_id
 				}
-			}, {
-				model: ReportVerifier
 			}]
 		});
 
-		if (!report || report.Verifiers.length == 0) {
-			this.throw(404, "There is no matching unverified report to ignore.")
+		if (!item) {
+			this.throw(404, "There is no matching report to ignore.")
 		}
 		
-		let result = yield report.removeVerifier(report.Verifiers[0]);
+		let verifier = item.Verifiers[0];
+		yield verifier.increment('activity_count');
+		yield item.removeVerifier(verifier);
 		
-		if (result[0] === 1) {
-			this.status = 200;
-		}
-
+		this.status = 200;
+		
 		yield next;
 	}
 }
