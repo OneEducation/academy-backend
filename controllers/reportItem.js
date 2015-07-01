@@ -96,7 +96,7 @@ module.exports = {
     let verifier = item.get('Verifiers')[0];
 
     // Give point to verifier
-    yield verifier.increment('activity_count');
+    verifier = yield verifier.increment('activity_count');
 
     // Update only unverified one
     if (item.get('verified') === false) { 
@@ -112,8 +112,8 @@ module.exports = {
     yield item.removeVerifier(verifier);
     
     this.body = {
-          points: verifier.get('activity_count')
-      };
+      points: verifier.get('activity_count')
+    };
 
     yield next;
   },
@@ -166,12 +166,12 @@ module.exports = {
     }
     
     let verifier = item.Verifiers[0];
-    yield verifier.increment('activity_count');
+    verifier = yield verifier.increment('activity_count');
     yield item.removeVerifier(verifier);
     
     this.body = {
-          points: verifier.get('activity_count')
-      };
+      points: verifier.get('activity_count')
+    };
     
     yield next;
   }
