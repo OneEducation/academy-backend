@@ -93,7 +93,7 @@ module.exports = {
       this.throw(404, "There is no report to you.");
     }
 
-    let verifier = item.get('Verifiers')[0];
+    let verifier = (yield item.getVerifiers())[0];
 
     // Give point to verifier
     yield verifier.increment('activity_count');
@@ -166,7 +166,7 @@ module.exports = {
       this.throw(404, "There is no matching report to ignore.")
     }
     
-    let verifier = item.Verifiers[0];
+    let verifier = (yield item.getVerifiers())[0];
     yield verifier.increment('activity_count');
     yield verifier.reload();
     yield item.removeVerifier(verifier);
