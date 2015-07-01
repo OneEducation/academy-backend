@@ -111,7 +111,9 @@ module.exports = {
 		// Remove verifier from item
 		yield item.removeVerifier(verifier);
 		
-		this.body = item;
+		this.body = {
+      		points: verifier.get('activity_count')
+    	};
 
 		yield next;
 	},
@@ -167,7 +169,9 @@ module.exports = {
 		yield verifier.increment('activity_count');
 		yield item.removeVerifier(verifier);
 		
-		this.status = 200;
+		this.body = {
+      		points: verifier.get('activity_count')
+    	};
 		
 		yield next;
 	}
