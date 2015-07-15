@@ -2,14 +2,9 @@
 
 var debug = require('debug')('course_controller');
 var Models = require('../models');
-var Report = Models.Report;
-var ReportItem = Models.Item;
-var ReportVerifier = Models.Verifier;
-var Reporter = Models.Reporter;
 let Course = Models.Course;
 
 let child_process = require('child_process');
-let refresh;
 
 module.exports = {
   get: function*(next) {
@@ -28,6 +23,6 @@ module.exports = {
   		this.body = 'Refresh is in progress. Retry later.';
   	}
   	
- 	yield next;
+ 	  yield next;
   }
 }

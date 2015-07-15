@@ -118,7 +118,7 @@ module.exports = {
     //console.log('GCM result: ', result);
     console.log('Body: ', result.body);
 
-    yield sendMailToVerifiers(verifiers);
+    //yield sendMailToVerifiers(verifiers);
 
     yield next;
   }
