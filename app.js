@@ -11,6 +11,9 @@ Models.init(function() {
   	app.use(function *(next) {
 	  	try {
 		    yield next;
+
+		    this.set('Cache-Control', 'no-cache');
+
 	  	} catch (err) {
 		    this.status = err.status || 500;
 		    this.body = err.message;
