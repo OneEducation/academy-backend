@@ -63,11 +63,14 @@ module.exports = {
       updatedAt: article.updated_at,
       content_url: null,
       thumbnail_url: null,
-      description: null,
+      description: null,      
+      original_url: response.request.href,
+      // tags {
       point: 5,
       category: null,
       type: 'article',
-      original_url: response.request.href
+      teacher_only: false
+      // }
     };
 
     console.log('Download done: ' + id);
@@ -76,9 +79,17 @@ module.exports = {
       let meta = tag.name.split(':');
       console.log(meta);
 
-      if (meta[0] in course) {
-        course[meta[0]] = meta[1];
-      }
+      switch (meta[0]) {
+        case 'point':
+        case 'category':
+        case 'type':
+          course[meta[0]] = meta[1];
+          break;
+
+        case 'teacher_only':
+          course[meta[0]] = true;
+          break;
+      };
     });
 
     if (course.category) {

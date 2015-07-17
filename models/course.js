@@ -36,6 +36,11 @@ module.exports = function(sequelize, DataTypes) {
     original_url: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    teacher_only: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     }
   }, {
     tableName: 'courses'
