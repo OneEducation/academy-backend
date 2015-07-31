@@ -69,7 +69,8 @@ module.exports = {
       point: 5,
       category: null,
       type: 'article',
-      teacher_only: false
+      teacher_only: false,
+      action: null
       // }
     };
 
@@ -83,6 +84,7 @@ module.exports = {
         case 'point':
         case 'category':
         case 'type':
+        case 'action':
           course[meta[0]] = meta[1];
           break;
 

@@ -41,6 +41,9 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    action: {
+      type: DataTypes.STRING
     }
   }, {
     tableName: 'courses'
