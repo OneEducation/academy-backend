@@ -1,11 +1,12 @@
 "use strict";
 
-var debug = require('debug')('reportItem_controller');
-var Models = require('../models');
-var Report = Models.Report;
-var ReportItem = Models.Item;
-var ReportVerifier = Models.Verifier;
-var Reporter = Models.Reporter;
+let debug = require('debug')('reportItem_controller');
+let Models = require('../models');
+let Report = Models.Report;
+let ReportItem = Models.Item;
+let ReportVerifier = Models.Verifier;
+let Reporter = Models.Reporter;
+let Course = Models.Course;
 
 module.exports = {
   get_by_verifiedBy: function *(next) {
@@ -27,6 +28,9 @@ module.exports = {
         where: {
           xo_uuid: this.params.id
         }
+      }, {
+        model: Course,
+        attributes: ['title', 'point', 'action']
       }]
     });
     debug(items);
@@ -57,6 +61,9 @@ module.exports = {
         where: {
           xo_uuid: this.params.id
         }
+      }, {
+        model: Course,
+        attributes: ['title', 'point', 'action']
       }]
     });
     debug(items);
@@ -84,6 +91,9 @@ module.exports = {
         where: {
           xo_uuid: params.verifier_id
         }
+      }, {
+        model: Course,
+        attributes: ['title', 'point', 'action']
       }]
     });
 
@@ -94,6 +104,7 @@ module.exports = {
     }
 
     let verifier = (yield item.getVerifiers())[0];
+    let course = yield item.getCourse();
 
     // Give point to verifier
     yield verifier.increment('activity_count');
@@ -105,6 +116,7 @@ module.exports = {
         count: params.count,
         verified: true,
         verified_at: Models.sequelize.fn('NOW'),
+        total_point: params.count * course.get('point'),
         VerifiedByXoUuid: verifier.get('xo_uuid')
       });
     }
@@ -122,16 +134,19 @@ module.exports = {
     debug("reporter id : " + this.params.id); 
 
     let items = yield ReportItem.findAll({
+      include: [{
+        model: Report,
+        attributes: ['ReporterXoUuid'],
         include: [{
-          model: Report,
-          attributes: ['ReporterXoUuid'],
-          include: [{
-            model: Reporter,
-            where: {
-              xo_uuid: this.params.id
-            }
-          }]
+          model: Reporter,
+          where: {
+            xo_uuid: this.params.id
+          }
         }]
+      }, {
+        model: Course,
+        attributes: ['title', 'point', 'action']
+      }]
     });
 
     debug(items);
