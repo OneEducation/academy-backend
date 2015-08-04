@@ -8,7 +8,13 @@ let child_process = require('child_process');
 
 module.exports = {
   get: function*(next) {
-    this.body = yield Course.findAll();
+    this.body = yield Course.findAll({
+      where: {
+        category: {
+          $ne: null
+        }
+      }
+    });
 
     yield next;
   },
