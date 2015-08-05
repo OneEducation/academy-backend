@@ -70,7 +70,8 @@ module.exports = {
       category: null,
       type: 'article',
       teacher_only: false,
-      action: null
+      action: null,
+      state: null
       // }
     };
 
@@ -85,6 +86,7 @@ module.exports = {
         case 'category':
         case 'type':
         case 'action':
+        case 'state':
           course[meta[0]] = meta[1];
           break;
 

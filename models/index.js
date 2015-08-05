@@ -36,6 +36,10 @@ module.exports = {
       through: 'items_verifiers'});
 
     this.Report.belongsTo(this.Reporter);
+    
+    this.Item.belongsTo(this.Course, {
+      foreignKey: 'course_id'
+    });
   },
 
   init: function(callback) {

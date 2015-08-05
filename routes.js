@@ -24,5 +24,6 @@ module.exports = function routes(app) {
   app.post('/app_intent', Common.setAppIntent);
 
   app.get('/courses', controllers.Course.get);
+  app.get('/courses/state/:state', controllers.Course.get);
   app.post('/courses/refresh', controllers.Course.refresh);
 };

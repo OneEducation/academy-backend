@@ -21,7 +21,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "DEBUG=* node-dev --harmony app.js",
-    "//prestart": "DEBUG=* node-dev --harmony models/init_script.js"
+    "prestart": "node_modules/sequelize-cli/bin/sequelize db:migrate --url 'mysql://root@localhost/xo_academy'"
   },
   "author": "dongseok@laptop.org.au",
   "license": "ISC"

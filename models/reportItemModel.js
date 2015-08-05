@@ -6,10 +6,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false
     },
-    point: {
-      type: DataTypes.INTEGER,
-      defaultValue: 5
-    },
     count: {
       type: DataTypes.INTEGER,
       defaultValue: 1
@@ -17,10 +13,6 @@ module.exports = function(sequelize, DataTypes) {
     total_point: {
       type: DataTypes.INTEGER,
       defaultValue: 5
-    },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false
     },
     verified: {
       type: DataTypes.BOOLEAN,
@@ -32,19 +24,5 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     tableName: 'items',
     timestamps: false,
-    hooks: {
-      beforeCreate: function(item, options, fn) {
-        item.point = item.point || 5;
-        item.count = item.count || 1;
-        item.total_point = item.point * item.count;
-
-        fn(null, item);
-      },
-      beforeUpdate: function(item, options, fn) {
-        item.total_point = item.point * item.count;
-
-        fn(null, item);
-      }
-    }
   });
 };

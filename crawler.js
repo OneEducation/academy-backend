@@ -6,10 +6,10 @@ let models = require('./models');
 
 co(function *(){
 
-	yield models.sequelize.sync();
+	yield models.Course.sync();
 
 	let result = yield freshdesk.getCategories();
-	//console.log(result);
+	console.log(result.toJSON());
 
 	let categories = result.body.map((category) => {
 		return category.category;
@@ -36,6 +36,7 @@ co(function *(){
 	yield freshdesk.updateArticles(articles);
 
 	console.log('done!!!!!');
+	process.exit();
 
 }).catch(function(err) {
 	console.error(err.stack);

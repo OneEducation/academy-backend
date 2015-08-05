@@ -9,20 +9,35 @@
    * https://github.com/Unitech/PM2/blob/master/ADVANCED_README.md#json-app-declaration
    *
    */
-  apps : [
+  "apps" : [
 
     // First application
     {
-      name      : "Academy-API",
-      script    : "app.js",
+      "name"      : "Academy-API",
+      "script"    : "app.js",
       "node_args" : "--harmony",
-      env: {
-        COMMON_VARIABLE: "true",
-        DEBUG: "*"
+      "env": {
+        "COMMON_VARIABLE": "true",
+        "DEBUG": "*"
       },
-      env_production : {
-        NODE_ENV: "production"
+      "env_production" : {
+        "NODE_ENV": "production"
       }
+    }, {
+      "name" : "crawler",
+      "script": "crawler.js",
+      "node_args" : "--harmony",
+      "env": {
+        "COMMON_VARIABLE": "true",
+        "DEBUG": "*"
+      },
+      "env_production" : {
+        "NODE_ENV": "production"
+      },
+      "cron_restart"     : "0 0 * * 1-5",
+      "exec_mode": "cluster",
+      "instances": 1,
+      "autorestart": false
     }
   ],
 
@@ -32,25 +47,25 @@
    * For more help go to :
    * https://github.com/Unitech/PM2/blob/master/ADVANCED_README.md#deployment-pm2--090
    */
-  deploy : {
-    production : {
-      user : "node",
-      host : "212.83.163.1",
-      ref  : "origin/master",
-      repo : "git@github.com:repo.git",
-      path : "/var/www/production",
+  "deploy" : {
+    "production" : {
+      "user" : "node",
+      "host" : "212.83.163.1",
+      "ref"  : "origin/master",
+      "repo" : "git@github.com:repo.git",
+      "path" : "/var/www/production",
       "post-deploy" : "pm2 startOrRestart ecosystem.json --env production"
     },
-    dev : {
-      user : "olpc",
-      host : "one-network.org",
-      ref  : "origin/master",
-      repo : "https://github.com/OneEducation/academy-backend.git",
+    "dev" : {
+      "user" : "olpc",
+      "host" : "one-network.org",
+      "ref"  : "origin/master",
+      "repo" : "https://github.com/OneEducation/academy-backend.git",
       //repo : "git@github.com:OneEducation/academy-backend.git",
-      path : "/home/olpc/academy",
-      "post-deploy" : "cp ../config.js . && npm install && node_modules/sequelize-cli/bin/sequelize db:migrate --url 'mysql://1academy:test123@localhost/one_academy' && pm2 startOrRestart ecosystem.json --env dev && pm2 start crawler.js -i 1 --cron='0 0 * * 1-5' --node-args='--harmony'",
-      env  : {
-        NODE_ENV: "dev"
+      "path" : "/home/olpc/academy",
+      "post-deploy" : "cp ../config.js . && npm install && node_modules/sequelize-cli/bin/sequelize db:migrate --url 'mysql://1academy:test123@localhost/one_academy' && pm2 startOrRestart ecosystem.json --env dev",
+      "env"  : {
+        "NODE_ENV": "dev"
       }
     }
   }
