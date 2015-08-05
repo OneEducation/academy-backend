@@ -44,6 +44,9 @@ module.exports = function(sequelize, DataTypes) {
     },
     action: {
       type: DataTypes.STRING
+    },
+    state: {
+      type: DataTypes.STRING
     }
   }, {
     tableName: 'courses'
