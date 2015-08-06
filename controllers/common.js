@@ -68,11 +68,11 @@ module.exports = {
 
     debug(xo_uuid + ' / ' + gcm_token);
 
-    let verifier = yield ReportVerifier.findOne({
+    let verifier = (yield ReportVerifier.findOrCreate({
       where: {
         xo_uuid: xo_uuid
       }
-    });
+    }))[0];
 
     if (!verifier) {
       this.throw(403);
