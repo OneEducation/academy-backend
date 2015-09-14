@@ -12,4 +12,6 @@ module.exports = {
   ReportItem: load('reportItem'),
   Common: load('common'),
   Course: load('course')
+
+  , Infinity: load('Infinity')
 };
